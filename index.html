@@ -720,7 +720,7 @@
   // (Google Apps Script, Make, n8n, Zapier...), pegá la URL acá.
   // Si la dejás vacía, todo se guarda solo en localStorage.
   // ============================================================
-  const WEBHOOK_URL = "";
+  const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzxDIr8UYBn4OnNe5iwiyNUV79sMa7FxVT9CvLebnRu6CJC6wn4PzTWeLlv4NGVFc9x/exec";
 
   const STORAGE_KEY = "crevy_encuesta_respuestas_v1";
 
@@ -788,8 +788,18 @@
     }
 
     function validateStep(n) {
-      // Validación desactivada temporalmente para poder recorrer todas las secciones.
-      return true;
+      const step = document.querySelector(`.step[data-step="${n}"]`);
+      let ok = true;
+      step.querySelectorAll("[required]").forEach(input => {
+        const err = input.closest(".field")?.querySelector(".err");
+        const v = (input.value || "").trim();
+        let valid = v.length > 0;
+        if (input.type === "email") valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        if (input.type === "number") valid = v !== "" && !isNaN(Number(v));
+        if (!valid) { ok = false; err?.classList.add("show"); }
+        else err?.classList.remove("show");
+      });
+      return ok;
     }
 
     prevBtn.addEventListener("click", () => {
