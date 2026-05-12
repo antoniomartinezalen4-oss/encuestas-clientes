@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crevy · Resultados de tu sistema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #006766;
+    --primary-end: #008280;
+    --primary-soft: rgba(0,103,102,0.08);
+    --surface: #F9FAF8;
+    --surface-low: #EFF1EF;
+    --surface-high: #E7E8E6;
+    --on-surface: #191C1B;
+    --on-surface-variant: #3F4946;
+    --outline: rgba(111,121,119,0.18);
+    --danger: #c0392b;
+    --success: #1f8a70;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--surface);
+    color: var(--on-surface);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--outline);
+  }
+
+  .logo {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    background: var(--surface-low);
+    border: 1px solid var(--outline);
+    border-radius: 4px;
+    padding: 4px 10px;
+  }
+
+  /* HERO */
+  .hero { margin-bottom: 36px; }
+
+  .eyebrow {
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.15;
+    letter-spacing: -0.8px;
+    margin-bottom: 14px;
+  }
+
+  .lede {
+    color: var(--on-surface-variant);
+    font-size: 16px;
+    max-width: 580px;
+  }
+
+  /* PROGRESS */
+  .progress {
+    margin: 28px 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-high);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-end));
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .progress-label {
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--on-surface-variant);
+    letter-spacing: 1px;
+  }
+
+  /* CARD / STEPS */
+  .card {
+    background: #fff;
+    border: 1px solid var(--outline);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+
+  .step { display: none; }
+  .step.active { display: block; animation: fade 0.3s ease; }
+
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-title {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  .step-sub {
+    color: var(--on-surface-variant);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  /* FORM */
+  .field { margin-bottom: 20px; }
+
+  label {
+    display: block;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--on-surface);
+    margin-bottom: 8px;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--on-surface-variant);
+    margin-top: 6px;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--outline);
+    border-radius: 10px;
+    background: var(--surface);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--on-surface);
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  textarea { resize: vertical; min-height: 88px; }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 540px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* RATING / SLIDER */
+  .rating {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .rating-opt {
+    flex: 1;
+    min-width: 38px;
+    text-align: center;
+    padding: 12px 8px;
+    border: 1px solid var(--outline);
+    border-radius: 10px;
+    background: var(--surface);
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--on-surface-variant);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .rating-opt:hover { border-color: var(--primary); color: var(--primary); }
+  .rating-opt.selected {
+    background: linear-gradient(135deg, var(--primary), var(--primary-end));
+    color: #fff;
+    border-color: transparent;
+  }
+  .rating-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--on-surface-variant);
+    margin-top: 8px;
+  }
+
+  /* CHOICES */
+  .choices { display: flex; flex-direction: column; gap: 8px; }
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--outline);
+    border-radius: 10px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .choice:hover { border-color: var(--primary); background: #fff; }
+  .choice input { accent-color: var(--primary); }
+  .choice.selected {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+
+  /* NAVIGATION */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    gap: 12px;
+  }
+
+  button {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.2px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-end));
+    color: #fff;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,103,102,0.25); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--on-surface-variant);
+    border: 1px solid var(--outline);
+  }
+  .btn-ghost:hover { background: var(--surface-low); color: var(--on-surface); }
+
+  .err {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+  }
+  .err.show { display: block; }
+
+  /* THANKS */
+  .thanks { text-align: center; padding: 24px 0; }
+  .thanks-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-end));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 32px;
+  }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--on-surface-variant);
+  }
+  .footer a { color: var(--primary); text-decoration: none; }
+
+  /* ADMIN */
+  .admin-bar {
+    background: var(--surface-low);
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat {
+    background: #fff;
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .stat-label {
+    font-family: 'Manrope', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-sub { font-size: 11px; color: var(--on-surface-variant); margin-top: 4px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--outline);
+    vertical-align: top;
+  }
+  th {
+    background: var(--surface-low);
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+  }
+  tr:last-child td { border-bottom: none; }
+  .table-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="logo">Crevy</div>
+    <div class="badge" id="modeBadge">Encuesta de resultados</div>
+  </header>
+
+  <!-- ============================ ENCUESTA ============================ -->
+  <main id="surveyView">
+    <section class="hero">
+      <div class="eyebrow">Tu experiencia con el sistema</div>
+      <h1>Contanos cómo cambió tu negocio</h1>
+      <p class="lede">5 minutos. Tus respuestas nos ayudan a medir el impacto real del sistema en tu tiempo, tus ventas y tu organización.</p>
+    </section>
+
+    <div class="progress">
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-label" id="progressLabel">1 / 7</div>
+    </div>
+
+    <div class="card">
+      <form id="surveyForm" autocomplete="off">
+
+        <!-- PASO 1: Identidad -->
+        <div class="step active" data-step="1">
+          <div class="step-title">Empecemos por vos</div>
+          <div class="step-sub">Para poder identificar tu caso y hacer seguimiento.</div>
+
+          <div class="two-col">
+            <div class="field">
+              <label for="nombre">Nombre y apellido</label>
+              <input type="text" id="nombre" name="nombre" required />
+              <div class="err">Completá este campo</div>
+            </div>
+            <div class="field">
+              <label for="empresa">Empresa / Negocio</label>
+              <input type="text" id="empresa" name="empresa" required />
+              <div class="err">Completá este campo</div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="field">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required />
+              <div class="err">Email inválido</div>
+            </div>
+            <div class="field">
+              <label for="rubro">Rubro</label>
+              <input type="text" id="rubro" name="rubro" placeholder="Ej: inmobiliaria, gastronomía, salud..." />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="meses">¿Hace cuánto usás el sistema?</label>
+            <select id="meses" name="meses">
+              <option value="">Seleccioná una opción</option>
+              <option value="<1">Menos de 1 mes</option>
+              <option value="1-3">1 a 3 meses</option>
+              <option value="3-6">3 a 6 meses</option>
+              <option value="6-12">6 a 12 meses</option>
+              <option value="12+">Más de 1 año</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PASO 2: ANTES -->
+        <div class="step" data-step="2">
+          <div class="step-title">Antes del sistema</div>
+          <div class="step-sub">Pensá en cómo trabajabas hace unos meses, antes de implementar Crevy.</div>
+
+          <div class="field">
+            <label>Horas semanales dedicadas a tareas operativas/administrativas</label>
+            <input type="number" id="horas_antes" name="horas_antes" min="0" max="168" placeholder="Ej: 25" required />
+            <div class="hint">Carga manual de datos, seguimiento de clientes, planillas, mensajes, etc.</div>
+            <div class="err">Ingresá un número</div>
+          </div>
+
+          <div class="field">
+            <label>Ventas mensuales promedio (antes)</label>
+            <input type="number" id="ventas_antes" name="ventas_antes" min="0" placeholder="Ej: 15" required />
+            <div class="hint">Cantidad de ventas/clientes cerrados por mes.</div>
+            <div class="err">Ingresá un número</div>
+          </div>
+
+          <div class="field">
+            <label>¿Cuál era tu principal dolor antes? (opcional)</label>
+            <textarea id="dolor_antes" name="dolor_antes" placeholder="Ej: se me caían leads, no tenía orden, perdía tiempo respondiendo lo mismo..."></textarea>
+          </div>
+        </div>
+
+        <!-- PASO 3: DESPUÉS -->
+        <div class="step" data-step="3">
+          <div class="step-title">Después del sistema</div>
+          <div class="step-sub">Tu situación actual con Crevy funcionando.</div>
+
+          <div class="field">
+            <label>Horas semanales dedicadas a tareas operativas (hoy)</label>
+            <input type="number" id="horas_despues" name="horas_despues" min="0" max="168" placeholder="Ej: 8" required />
+            <div class="err">Ingresá un número</div>
+          </div>
+
+          <div class="field">
+            <label>Ventas mensuales promedio (hoy)</label>
+            <input type="number" id="ventas_despues" name="ventas_despues" min="0" placeholder="Ej: 28" required />
+            <div class="err">Ingresá un número</div>
+          </div>
+
+          <div class="field">
+            <label>¿Qué cambió principalmente? (opcional)</label>
+            <textarea id="cambio" name="cambio" placeholder="Ej: respondo más rápido, no se me cae ningún lead, todo queda registrado..."></textarea>
+          </div>
+        </div>
+
+        <!-- PASO 4: VENTAS ATRIBUIDAS -->
+        <div class="step" data-step="4">
+          <div class="step-title">Ventas atribuibles al sistema</div>
+          <div class="step-sub">¿Cuántas de tus ventas actuales sentís que <strong>no hubieran pasado</strong> sin el sistema?</div>
+
+          <div class="field">
+            <label>Cantidad de ventas/mes atribuidas a Crevy</label>
+            <input type="number" id="ventas_atribuidas" name="ventas_atribuidas" min="0" placeholder="Ej: 10" required />
+            <div class="err">Ingresá un número</div>
+          </div>
+
+          <div class="field">
+            <label>Ticket promedio de esas ventas (en tu moneda)</label>
+            <input type="number" id="ticket" name="ticket" min="0" placeholder="Ej: 50000" />
+            <div class="hint">Opcional. Nos sirve para estimar el impacto en facturación.</div>
+          </div>
+
+          <div class="field">
+            <label>¿De qué % de tus ventas totales hablamos?</label>
+            <div class="rating" data-name="pct_ventas">
+              <div class="rating-opt" data-value="0-20">0-20%</div>
+              <div class="rating-opt" data-value="20-40">20-40%</div>
+              <div class="rating-opt" data-value="40-60">40-60%</div>
+              <div class="rating-opt" data-value="60-80">60-80%</div>
+              <div class="rating-opt" data-value="80-100">80-100%</div>
+            </div>
+            <input type="hidden" id="pct_ventas" name="pct_ventas" required />
+            <div class="err">Elegí una opción</div>
+          </div>
+        </div>
+
+        <!-- PASO 5: AHORRO -->
+        <div class="step" data-step="5">
+          <div class="step-title">Ahorro de tiempo y dinero</div>
+          <div class="step-sub">Cuantifiquemos el impacto en organización.</div>
+
+          <div class="field">
+            <label>Estimación de ahorro mensual en dinero (gracias al sistema)</label>
+            <input type="number" id="ahorro_dinero" name="ahorro_dinero" min="0" placeholder="Ej: 80000" />
+            <div class="hint">Sumá: tiempo ahorrado a tu tarifa, empleados que no necesitaste contratar, errores evitados, etc.</div>
+          </div>
+
+          <div class="field">
+            <label>¿Qué tareas dejaste de hacer manualmente? (elegí todas las que apliquen)</label>
+            <div class="choices" data-multi="tareas">
+              <label class="choice"><input type="checkbox" value="Responder consultas repetidas" /> Responder consultas repetidas</label>
+              <label class="choice"><input type="checkbox" value="Cargar datos en planillas" /> Cargar datos en planillas</label>
+              <label class="choice"><input type="checkbox" value="Hacer seguimiento de leads" /> Hacer seguimiento de leads</label>
+              <label class="choice"><input type="checkbox" value="Coordinar turnos / agendas" /> Coordinar turnos / agendas</label>
+              <label class="choice"><input type="checkbox" value="Enviar recordatorios" /> Enviar recordatorios</label>
+              <label class="choice"><input type="checkbox" value="Generar reportes" /> Generar reportes</label>
+              <label class="choice"><input type="checkbox" value="Cobranzas / facturación" /> Cobranzas / facturación</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 6: PERCEPCIÓN -->
+        <div class="step" data-step="6">
+          <div class="step-title">¿Cuánto sentís que te hizo ganar?</div>
+          <div class="step-sub">Más allá de los números: tu percepción del impacto.</div>
+
+          <div class="field">
+            <label>Impacto general del sistema en tu negocio</label>
+            <div class="rating" data-name="impacto">
+              <div class="rating-opt" data-value="1">1</div>
+              <div class="rating-opt" data-value="2">2</div>
+              <div class="rating-opt" data-value="3">3</div>
+              <div class="rating-opt" data-value="4">4</div>
+              <div class="rating-opt" data-value="5">5</div>
+              <div class="rating-opt" data-value="6">6</div>
+              <div class="rating-opt" data-value="7">7</div>
+              <div class="rating-opt" data-value="8">8</div>
+              <div class="rating-opt" data-value="9">9</div>
+              <div class="rating-opt" data-value="10">10</div>
+            </div>
+            <div class="rating-scale"><span>Nulo</span><span>Transformador</span></div>
+            <input type="hidden" id="impacto" name="impacto" required />
+            <div class="err">Elegí una opción</div>
+          </div>
+
+          <div class="field">
+            <label>¿Qué tan probable es que recomiendes Crevy a un colega? (NPS)</label>
+            <div class="rating" data-name="nps">
+              <div class="rating-opt" data-value="0">0</div>
+              <div class="rating-opt" data-value="1">1</div>
+              <div class="rating-opt" data-value="2">2</div>
+              <div class="rating-opt" data-value="3">3</div>
+              <div class="rating-opt" data-value="4">4</div>
+              <div class="rating-opt" data-value="5">5</div>
+              <div class="rating-opt" data-value="6">6</div>
+              <div class="rating-opt" data-value="7">7</div>
+              <div class="rating-opt" data-value="8">8</div>
+              <div class="rating-opt" data-value="9">9</div>
+              <div class="rating-opt" data-value="10">10</div>
+            </div>
+            <div class="rating-scale"><span>Para nada</span><span>Sin dudas</span></div>
+            <input type="hidden" id="nps" name="nps" required />
+            <div class="err">Elegí una opción</div>
+          </div>
+        </div>
+
+        <!-- PASO 7: TESTIMONIO -->
+        <div class="step" data-step="7">
+          <div class="step-title">Una última cosa</div>
+          <div class="step-sub">Tu testimonio nos ayuda a mejorar y a ayudar a otros como vos.</div>
+
+          <div class="field">
+            <label>Si tuvieras que resumir tu experiencia en una frase…</label>
+            <textarea id="testimonio" name="testimonio" placeholder="Ej: Crevy me devolvió mis fines de semana y duplicó mi tasa de cierre."></textarea>
+          </div>
+
+          <div class="field">
+            <label class="choice" style="background: var(--surface-low);">
+              <input type="checkbox" id="permiso_testimonio" />
+              <span>Autorizo a Crevy a usar mi testimonio (con mi nombre y empresa) en su web y redes.</span>
+            </label>
+          </div>
+
+          <div class="field">
+            <label for="extra">¿Algo más que quieras contarnos? (opcional)</label>
+            <textarea id="extra" name="extra" placeholder="Ideas, pedidos, lo que sea..."></textarea>
+          </div>
+        </div>
+
+        <!-- THANKS -->
+        <div class="step" data-step="8">
+          <div class="thanks">
+            <div class="thanks-icon">✓</div>
+            <div class="step-title">¡Gracias!</div>
+            <p class="step-sub" style="margin-top:8px;">Tu respuesta quedó registrada. Vamos a leerla con atención y, si autorizaste tu testimonio, te avisamos antes de publicarlo.</p>
+            <button type="button" class="btn-ghost" onclick="location.reload()" style="margin-top: 16px;">Enviar otra respuesta</button>
+          </div>
+        </div>
+
+        <div class="nav" id="navBar">
+          <button type="button" class="btn-ghost" id="prevBtn">Atrás</button>
+          <button type="button" class="btn-primary" id="nextBtn">Siguiente</button>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="footer">
+      Tus datos se guardan localmente y se envían solo a Crevy. ·
+      <a href="?view=admin">Ver resultados</a>
+    </div>
+  </main>
+
+  <!-- ============================ ADMIN ============================ -->
+  <main id="adminView" style="display:none;">
+    <section class="hero">
+      <div class="eyebrow">Panel interno</div>
+      <h1>Resultados de la encuesta</h1>
+      <p class="lede">Resumen de las respuestas recibidas. Exportá a CSV para analizar en detalle.</p>
+    </section>
+
+    <div class="admin-bar">
+      <div style="font-size:13px;color:var(--on-surface-variant);">
+        <strong id="totalResp">0</strong> respuestas guardadas en este dispositivo
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="btn-ghost" id="exportBtn">Exportar CSV</button>
+        <button type="button" class="btn-ghost" id="clearBtn">Borrar todo</button>
+        <a href="?" style="text-decoration:none;"><button type="button" class="btn-primary">Volver a la encuesta</button></a>
+      </div>
+    </div>
+
+    <div class="stats" id="statsGrid"></div>
+
+    <div class="table-wrap">
+      <table id="respTable">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Empresa</th>
+            <th>Horas antes→hoy</th>
+            <th>Ventas antes→hoy</th>
+            <th>Atribuidas</th>
+            <th>$ ahorro/mes</th>
+            <th>Impacto</th>
+            <th>NPS</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  // ============================================================
+  // CONFIG: si querés mandar los resultados a un endpoint propio
+  // (Google Apps Script, Make, n8n, Zapier...), pegá la URL acá.
+  // Si la dejás vacía, todo se guarda solo en localStorage.
+  // ============================================================
+  const WEBHOOK_URL = "";
+
+  const STORAGE_KEY = "crevy_encuesta_respuestas_v1";
+
+  // ---------- ROUTING ----------
+  const params = new URLSearchParams(location.search);
+  if (params.get("view") === "admin") {
+    document.getElementById("surveyView").style.display = "none";
+    document.getElementById("adminView").style.display = "block";
+    document.getElementById("modeBadge").textContent = "Admin";
+    renderAdmin();
+  } else {
+    initSurvey();
+  }
+
+  // ---------- ENCUESTA ----------
+  function initSurvey() {
+    const steps = document.querySelectorAll(".step");
+    const totalSteps = steps.length - 1; // último es "gracias"
+    let current = 1;
+
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const navBar = document.getElementById("navBar");
+
+    // Rating selectores (botones)
+    document.querySelectorAll(".rating").forEach(group => {
+      const hiddenName = group.dataset.name;
+      group.querySelectorAll(".rating-opt").forEach(opt => {
+        opt.addEventListener("click", () => {
+          group.querySelectorAll(".rating-opt").forEach(o => o.classList.remove("selected"));
+          opt.classList.add("selected");
+          document.getElementById(hiddenName).value = opt.dataset.value;
+          group.parentElement.querySelector(".err")?.classList.remove("show");
+        });
+      });
+    });
+
+    // Multi-choice estilo visual
+    document.querySelectorAll(".choices .choice input[type=checkbox]").forEach(cb => {
+      cb.addEventListener("change", () => {
+        cb.parentElement.classList.toggle("selected", cb.checked);
+      });
+    });
+
+    function showStep(n) {
+      steps.forEach(s => s.classList.remove("active"));
+      document.querySelector(`.step[data-step="${n}"]`).classList.add("active");
+      const pct = ((n - 1) / (totalSteps)) * 100;
+      progressBar.style.width = Math.min(pct, 100) + "%";
+
+      if (n > totalSteps) {
+        progressBar.style.width = "100%";
+        progressLabel.textContent = "Listo";
+        navBar.style.display = "none";
+      } else {
+        progressLabel.textContent = `${n} / ${totalSteps}`;
+        navBar.style.display = "flex";
+      }
+
+      prevBtn.style.visibility = n === 1 ? "hidden" : "visible";
+      nextBtn.textContent = n === totalSteps ? "Enviar" : "Siguiente";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function validateStep(n) {
+      // Validación desactivada temporalmente para poder recorrer todas las secciones.
+      return true;
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (current > 1) { current--; showStep(current); }
+    });
+
+    nextBtn.addEventListener("click", async () => {
+      if (!validateStep(current)) return;
+      if (current === totalSteps) {
+        nextBtn.disabled = true;
+        nextBtn.textContent = "Enviando...";
+        const data = collectData();
+        await saveResponse(data);
+        current++;
+        showStep(current);
+      } else {
+        current++;
+        showStep(current);
+      }
+    });
+
+    showStep(1);
+  }
+
+  function collectData() {
+    const form = document.getElementById("surveyForm");
+    const d = {};
+    form.querySelectorAll("input, textarea, select").forEach(el => {
+      if (el.type === "checkbox") return;
+      if (el.name) d[el.name] = el.value.trim();
+    });
+    d.tareas = Array.from(document.querySelectorAll('[data-multi="tareas"] input:checked')).map(c => c.value);
+    d.permiso_testimonio = document.getElementById("permiso_testimonio").checked;
+    d.testimonio = document.getElementById("testimonio").value.trim();
+    d.extra = document.getElementById("extra").value.trim();
+    d.fecha = new Date().toISOString();
+
+    // Métricas calculadas
+    const ha = Number(d.horas_antes) || 0;
+    const hd = Number(d.horas_despues) || 0;
+    const va = Number(d.ventas_antes) || 0;
+    const vd = Number(d.ventas_despues) || 0;
+    const atrib = Number(d.ventas_atribuidas) || 0;
+    const ticket = Number(d.ticket) || 0;
+    d.horas_ahorradas_semana = Math.max(ha - hd, 0);
+    d.delta_ventas = vd - va;
+    d.facturacion_atribuida = atrib * ticket;
+    return d;
+  }
+
+  async function saveResponse(data) {
+    try {
+      const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      all.push(data);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    } catch (e) { console.error(e); }
+
+    if (WEBHOOK_URL) {
+      try {
+        // text/plain evita el preflight CORS hacia Google Apps Script
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(data)
+        });
+      } catch (e) { console.warn("Webhook falló, pero quedó guardado local:", e); }
+    }
+  }
+
+  // ---------- ADMIN ----------
+  function renderAdmin() {
+    const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    document.getElementById("totalResp").textContent = all.length;
+
+    // Stats
+    const statsGrid = document.getElementById("statsGrid");
+    if (all.length === 0) {
+      statsGrid.innerHTML = `<div class="stat"><div class="stat-label">Sin datos</div><div class="stat-value">—</div><div class="stat-sub">Esperando respuestas</div></div>`;
+    } else {
+      const sum = (k) => all.reduce((a, b) => a + (Number(b[k]) || 0), 0);
+      const avg = (k) => all.length ? (sum(k) / all.length) : 0;
+      const totalAtrib = sum("ventas_atribuidas");
+      const totalFact = sum("facturacion_atribuida");
+      const totalHoras = sum("horas_ahorradas_semana");
+      const totalAhorro = sum("ahorro_dinero");
+      const avgImp = avg("impacto").toFixed(1);
+      const avgNps = avg("nps").toFixed(1);
+      const promoters = all.filter(r => Number(r.nps) >= 9).length;
+      const detractors = all.filter(r => Number(r.nps) <= 6).length;
+      const nps = all.length ? Math.round(((promoters - detractors) / all.length) * 100) : 0;
+
+      statsGrid.innerHTML = `
+        <div class="stat"><div class="stat-label">Ventas atribuidas/mes</div><div class="stat-value">${totalAtrib}</div><div class="stat-sub">Suma de todos los clientes</div></div>
+        <div class="stat"><div class="stat-label">Facturación atribuida</div><div class="stat-value">$${formatNum(totalFact)}</div><div class="stat-sub">atrib × ticket</div></div>
+        <div class="stat"><div class="stat-label">Horas ahorradas/sem</div><div class="stat-value">${totalHoras}</div><div class="stat-sub">Suma total</div></div>
+        <div class="stat"><div class="stat-label">$ Ahorro reportado/mes</div><div class="stat-value">$${formatNum(totalAhorro)}</div><div class="stat-sub">Estimado por clientes</div></div>
+        <div class="stat"><div class="stat-label">Impacto promedio</div><div class="stat-value">${avgImp}<span style="font-size:14px;color:var(--on-surface-variant);">/10</span></div></div>
+        <div class="stat"><div class="stat-label">NPS</div><div class="stat-value">${nps}</div><div class="stat-sub">Prom: ${promoters} · Det: ${detractors}</div></div>
+      `;
+    }
+
+    // Tabla
+    const tbody = document.querySelector("#respTable tbody");
+    tbody.innerHTML = all.slice().reverse().map(r => `
+      <tr>
+        <td>${(r.fecha || "").slice(0,10)}</td>
+        <td><strong>${esc(r.empresa)}</strong><br><span style="color:var(--on-surface-variant);font-size:11px;">${esc(r.nombre)}</span></td>
+        <td>${r.horas_antes||0} → ${r.horas_despues||0}<br><span style="color:var(--success);font-size:11px;">−${r.horas_ahorradas_semana||0}h/sem</span></td>
+        <td>${r.ventas_antes||0} → ${r.ventas_despues||0}<br><span style="color:var(--success);font-size:11px;">+${r.delta_ventas||0}</span></td>
+        <td>${r.ventas_atribuidas||0}<br><span style="color:var(--on-surface-variant);font-size:11px;">${r.pct_ventas||"—"}%</span></td>
+        <td>$${formatNum(r.ahorro_dinero||0)}</td>
+        <td>${r.impacto||"—"}/10</td>
+        <td>${r.nps||"—"}</td>
+      </tr>
+    `).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--on-surface-variant);padding:24px;">Aún no hay respuestas</td></tr>`;
+
+    document.getElementById("exportBtn").addEventListener("click", () => exportCSV(all));
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if (confirm("¿Borrar todas las respuestas de este dispositivo? No se puede deshacer.")) {
+        localStorage.removeItem(STORAGE_KEY);
+        renderAdmin();
+      }
+    });
+  }
+
+  function exportCSV(rows) {
+    if (!rows.length) return alert("No hay datos para exportar.");
+    const cols = ["fecha","nombre","empresa","email","rubro","meses","horas_antes","horas_despues","horas_ahorradas_semana","ventas_antes","ventas_despues","delta_ventas","ventas_atribuidas","pct_ventas","ticket","facturacion_atribuida","ahorro_dinero","tareas","impacto","nps","permiso_testimonio","testimonio","dolor_antes","cambio","extra"];
+    const head = cols.join(",");
+    const body = rows.map(r => cols.map(c => csvCell(r[c])).join(",")).join("\n");
+    const blob = new Blob([head + "\n" + body], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `crevy-encuesta-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function csvCell(v) {
+    if (v === undefined || v === null) return "";
+    let s = Array.isArray(v) ? v.join("; ") : String(v);
+    if (/[",\n]/.test(s)) s = `"${s.replace(/"/g,'""')}"`;
+    return s;
+  }
+  function formatNum(n) {
+    return Number(n||0).toLocaleString("es-AR");
+  }
+  function esc(s) {
+    return String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+</script>
+</body>
+</html>
