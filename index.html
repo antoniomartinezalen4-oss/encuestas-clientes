@@ -407,6 +407,148 @@
   }
   tr:last-child td { border-bottom: none; }
   .table-wrap { overflow-x: auto; }
+
+  /* LOADING */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--on-surface-variant);
+    font-size: 14px;
+    padding: 32px 0;
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--outline);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* CARRUSEL */
+  .carousel-wrap { position: relative; overflow: hidden; margin: 0 -4px; }
+  .carousel-track {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+    padding: 4px;
+  }
+  .tcard {
+    flex: 0 0 calc(100% - 8px);
+    background: #fff;
+    border: 1px solid var(--outline);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .tcard-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .tcard-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-end));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #fff;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .tcard-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .tcard-name {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .tcard-company {
+    font-size: 12px;
+    color: var(--on-surface-variant);
+    margin-top: 2px;
+  }
+  .tcard-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--primary-soft);
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    white-space: nowrap;
+  }
+  .tcard-quote {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--on-surface);
+    font-style: italic;
+    border-left: 3px solid var(--primary);
+    padding-left: 16px;
+  }
+  .tcard-stars {
+    display: flex;
+    gap: 3px;
+    font-size: 16px;
+  }
+  .carousel-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .carousel-nav button {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--outline);
+    background: #fff;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    padding: 0;
+  }
+  .carousel-nav button:hover { border-color: var(--primary); color: var(--primary); }
+  .carousel-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .carousel-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--surface-high);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .dot.active {
+    background: var(--primary);
+    width: 18px;
+    border-radius: 999px;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--on-surface-variant);
+    font-size: 14px;
+  }
+  .empty-state div:first-child { font-size: 36px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -667,8 +809,26 @@
     </div>
 
     <div class="footer">
-      Tus datos se guardan localmente y se envían solo a Crevy. ·
-      <a href="?view=admin">Ver resultados</a>
+      Tus datos se envían de forma segura solo a Crevy. ·
+      <a href="?view=testimonios">Ver testimonios</a> ·
+      <a href="?view=admin">Admin</a>
+    </div>
+  </main>
+
+  <!-- ============================ TESTIMONIOS ============================ -->
+  <main id="testimoniosView" style="display:none;">
+    <section class="hero">
+      <div class="eyebrow">Lo que dicen nuestros clientes</div>
+      <h1>Resultados reales, personas reales</h1>
+      <p class="lede">Clientes que implementaron el sistema Crevy y midieron su impacto.</p>
+    </section>
+
+    <div id="carouselContainer">
+      <div class="loading"><div class="spinner"></div> Cargando testimonios...</div>
+    </div>
+
+    <div class="footer" style="margin-top:40px;">
+      <a href="?">¿Sos cliente Crevy? Compartí tu experiencia →</a>
     </div>
   </main>
 
@@ -682,18 +842,20 @@
 
     <div class="admin-bar">
       <div style="font-size:13px;color:var(--on-surface-variant);">
-        <strong id="totalResp">0</strong> respuestas guardadas en este dispositivo
+        <strong id="totalResp">—</strong> respuestas en Google Sheets
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="btn-ghost" id="refreshBtn">↻ Actualizar</button>
         <button type="button" class="btn-ghost" id="exportBtn">Exportar CSV</button>
-        <button type="button" class="btn-ghost" id="clearBtn">Borrar todo</button>
+        <a href="?view=testimonios" style="text-decoration:none;"><button type="button" class="btn-ghost">Ver carrusel</button></a>
         <a href="?" style="text-decoration:none;"><button type="button" class="btn-primary">Volver a la encuesta</button></a>
       </div>
     </div>
 
-    <div class="stats" id="statsGrid"></div>
+    <div id="adminLoading" class="loading"><div class="spinner"></div> Cargando desde Google Sheets...</div>
+    <div class="stats" id="statsGrid" style="display:none;"></div>
 
-    <div class="table-wrap">
+    <div class="table-wrap" id="tableWrap" style="display:none;">
       <table id="respTable">
         <thead>
           <tr>
@@ -705,6 +867,7 @@
             <th>$ ahorro/mes</th>
             <th>Impacto</th>
             <th>NPS</th>
+            <th>Testimonio</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -726,11 +889,18 @@
 
   // ---------- ROUTING ----------
   const params = new URLSearchParams(location.search);
-  if (params.get("view") === "admin") {
+  const view = params.get("view");
+
+  if (view === "admin") {
     document.getElementById("surveyView").style.display = "none";
     document.getElementById("adminView").style.display = "block";
     document.getElementById("modeBadge").textContent = "Admin";
     renderAdmin();
+  } else if (view === "testimonios") {
+    document.getElementById("surveyView").style.display = "none";
+    document.getElementById("testimoniosView").style.display = "block";
+    document.getElementById("modeBadge").textContent = "Testimonios";
+    renderCarousel();
   } else {
     initSurvey();
   }
@@ -870,42 +1040,44 @@
   }
 
   // ---------- ADMIN ----------
-  function renderAdmin() {
-    const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    document.getElementById("totalResp").textContent = all.length;
+  let _adminData = [];
 
-    // Stats
+  async function renderAdmin() {
+    const data = await fetchFromSheets();
+    _adminData = data;
+    const loading = document.getElementById("adminLoading");
     const statsGrid = document.getElementById("statsGrid");
-    if (all.length === 0) {
+    const tableWrap = document.getElementById("tableWrap");
+
+    loading.style.display = "none";
+    statsGrid.style.display = "grid";
+    tableWrap.style.display = "block";
+
+    document.getElementById("totalResp").textContent = data.length;
+
+    if (data.length === 0) {
       statsGrid.innerHTML = `<div class="stat"><div class="stat-label">Sin datos</div><div class="stat-value">—</div><div class="stat-sub">Esperando respuestas</div></div>`;
     } else {
-      const sum = (k) => all.reduce((a, b) => a + (Number(b[k]) || 0), 0);
-      const avg = (k) => all.length ? (sum(k) / all.length) : 0;
-      const totalAtrib = sum("ventas_atribuidas");
-      const totalFact = sum("facturacion_atribuida");
-      const totalHoras = sum("horas_ahorradas_semana");
-      const totalAhorro = sum("ahorro_dinero");
-      const avgImp = avg("impacto").toFixed(1);
-      const avgNps = avg("nps").toFixed(1);
-      const promoters = all.filter(r => Number(r.nps) >= 9).length;
-      const detractors = all.filter(r => Number(r.nps) <= 6).length;
-      const nps = all.length ? Math.round(((promoters - detractors) / all.length) * 100) : 0;
+      const sum = (k) => data.reduce((a, b) => a + (Number(b[k]) || 0), 0);
+      const avg = (k) => data.length ? (sum(k) / data.length) : 0;
+      const promoters = data.filter(r => Number(r.nps) >= 9).length;
+      const detractors = data.filter(r => Number(r.nps) <= 6).length;
+      const nps = Math.round(((promoters - detractors) / data.length) * 100);
 
       statsGrid.innerHTML = `
-        <div class="stat"><div class="stat-label">Ventas atribuidas/mes</div><div class="stat-value">${totalAtrib}</div><div class="stat-sub">Suma de todos los clientes</div></div>
-        <div class="stat"><div class="stat-label">Facturación atribuida</div><div class="stat-value">$${formatNum(totalFact)}</div><div class="stat-sub">atrib × ticket</div></div>
-        <div class="stat"><div class="stat-label">Horas ahorradas/sem</div><div class="stat-value">${totalHoras}</div><div class="stat-sub">Suma total</div></div>
-        <div class="stat"><div class="stat-label">$ Ahorro reportado/mes</div><div class="stat-value">$${formatNum(totalAhorro)}</div><div class="stat-sub">Estimado por clientes</div></div>
-        <div class="stat"><div class="stat-label">Impacto promedio</div><div class="stat-value">${avgImp}<span style="font-size:14px;color:var(--on-surface-variant);">/10</span></div></div>
-        <div class="stat"><div class="stat-label">NPS</div><div class="stat-value">${nps}</div><div class="stat-sub">Prom: ${promoters} · Det: ${detractors}</div></div>
+        <div class="stat"><div class="stat-label">Ventas atribuidas/mes</div><div class="stat-value">${sum("ventas_atribuidas")}</div><div class="stat-sub">Suma de todos los clientes</div></div>
+        <div class="stat"><div class="stat-label">Facturación atribuida</div><div class="stat-value">$${formatNum(sum("facturacion_atribuida"))}</div><div class="stat-sub">atrib × ticket</div></div>
+        <div class="stat"><div class="stat-label">Horas ahorradas/sem</div><div class="stat-value">${sum("horas_ahorradas_semana")}</div><div class="stat-sub">Suma total</div></div>
+        <div class="stat"><div class="stat-label">$ Ahorro reportado/mes</div><div class="stat-value">$${formatNum(sum("ahorro_dinero"))}</div><div class="stat-sub">Estimado por clientes</div></div>
+        <div class="stat"><div class="stat-label">Impacto promedio</div><div class="stat-value">${avg("impacto").toFixed(1)}<span style="font-size:14px;color:var(--on-surface-variant);">/10</span></div></div>
+        <div class="stat"><div class="stat-label">NPS</div><div class="stat-value">${nps}</div><div class="stat-sub">${promoters} promotores · ${detractors} detractores</div></div>
       `;
     }
 
-    // Tabla
     const tbody = document.querySelector("#respTable tbody");
-    tbody.innerHTML = all.slice().reverse().map(r => `
+    tbody.innerHTML = data.slice().reverse().map(r => `
       <tr>
-        <td>${(r.fecha || "").slice(0,10)}</td>
+        <td>${String(r.fecha || "").slice(0,10)}</td>
         <td><strong>${esc(r.empresa)}</strong><br><span style="color:var(--on-surface-variant);font-size:11px;">${esc(r.nombre)}</span></td>
         <td>${r.horas_antes||0} → ${r.horas_despues||0}<br><span style="color:var(--success);font-size:11px;">−${r.horas_ahorradas_semana||0}h/sem</span></td>
         <td>${r.ventas_antes||0} → ${r.ventas_despues||0}<br><span style="color:var(--success);font-size:11px;">+${r.delta_ventas||0}</span></td>
@@ -913,14 +1085,115 @@
         <td>$${formatNum(r.ahorro_dinero||0)}</td>
         <td>${r.impacto||"—"}/10</td>
         <td>${r.nps||"—"}</td>
+        <td style="max-width:180px;font-style:italic;font-size:12px;color:var(--on-surface-variant);">${r.permiso_testimonio === "true" || r.permiso_testimonio === true ? "✅ " : "🔒 "}${esc(String(r.testimonio||"").slice(0,80))}${(r.testimonio||"").length>80?"…":""}</td>
       </tr>
-    `).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--on-surface-variant);padding:24px;">Aún no hay respuestas</td></tr>`;
+    `).join("") || `<tr><td colspan="9" style="text-align:center;color:var(--on-surface-variant);padding:24px;">Aún no hay respuestas</td></tr>`;
 
-    document.getElementById("exportBtn").addEventListener("click", () => exportCSV(all));
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      if (confirm("¿Borrar todas las respuestas de este dispositivo? No se puede deshacer.")) {
-        localStorage.removeItem(STORAGE_KEY);
-        renderAdmin();
+    document.getElementById("exportBtn").addEventListener("click", () => exportCSV(data));
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      statsGrid.style.display = "none";
+      tableWrap.style.display = "none";
+      loading.style.display = "flex";
+      renderAdmin();
+    });
+  }
+
+  // Trae todas las filas desde Google Sheets vía el Apps Script
+  async function fetchFromSheets() {
+    if (!WEBHOOK_URL) return [];
+    try {
+      const res = await fetch(WEBHOOK_URL + "?action=getAll");
+      const json = await res.json();
+      return json.ok ? json.rows : [];
+    } catch (e) {
+      console.error("Error al leer Sheets:", e);
+      return [];
+    }
+  }
+
+  // ---------- CARRUSEL DE TESTIMONIOS ----------
+  async function renderCarousel() {
+    const container = document.getElementById("carouselContainer");
+    const data = await fetchFromSheets();
+
+    // Solo mostramos los que autorizaron su testimonio
+    const approved = data.filter(r =>
+      r.testimonio && String(r.permiso_testimonio) === "true"
+    );
+
+    if (approved.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div>💬</div><p>Aún no hay testimonios autorizados para mostrar.</p></div>`;
+      return;
+    }
+
+    const cards = approved.map((r, i) => {
+      const initials = (r.nombre || "?").split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
+      const horasAhorradas = Number(r.horas_ahorradas_semana) || 0;
+      const ventas = Number(r.delta_ventas) || 0;
+      const impacto = Number(r.impacto) || 0;
+      const stars = "★".repeat(Math.round(impacto / 2)) + "☆".repeat(5 - Math.round(impacto / 2));
+
+      const pills = [];
+      if (horasAhorradas > 0) pills.push(`⏱ ${horasAhorradas}h/sem ahorradas`);
+      if (ventas > 0) pills.push(`📈 +${ventas} ventas/mes`);
+      if (r.ahorro_dinero && Number(r.ahorro_dinero) > 0) pills.push(`💰 $${formatNum(r.ahorro_dinero)}/mes ahorrados`);
+
+      return `
+        <div class="tcard">
+          <div class="tcard-header">
+            <div class="tcard-avatar">${initials}</div>
+            <div>
+              <div class="tcard-name">${esc(r.nombre)}</div>
+              <div class="tcard-company">${esc(r.empresa)}${r.rubro ? " · " + esc(r.rubro) : ""}</div>
+            </div>
+          </div>
+          ${pills.length ? `<div class="tcard-pills">${pills.map(p => `<span class="pill">${p}</span>`).join("")}</div>` : ""}
+          ${r.testimonio ? `<div class="tcard-quote">"${esc(r.testimonio)}"</div>` : ""}
+          <div class="tcard-stars" title="${impacto}/10">${stars}</div>
+        </div>
+      `;
+    });
+
+    let current = 0;
+
+    container.innerHTML = `
+      <div class="carousel-wrap">
+        <div class="carousel-track" id="cTrack">${cards.join("")}</div>
+      </div>
+      <div class="carousel-nav">
+        <button id="cPrev" disabled>←</button>
+        <div class="carousel-dots" id="cDots">
+          ${approved.map((_,i) => `<div class="dot${i===0?" active":""}" data-i="${i}"></div>`).join("")}
+        </div>
+        <button id="cNext" ${approved.length <= 1 ? "disabled" : ""}>→</button>
+      </div>
+    `;
+
+    const track = document.getElementById("cTrack");
+    const prevBtn = document.getElementById("cPrev");
+    const nextBtn = document.getElementById("cNext");
+    const dots = document.querySelectorAll("#cDots .dot");
+
+    function goTo(n) {
+      current = n;
+      track.style.transform = `translateX(calc(-${n * 100}% - ${n * 20}px))`;
+      prevBtn.disabled = n === 0;
+      nextBtn.disabled = n === approved.length - 1;
+      dots.forEach((d, i) => d.classList.toggle("active", i === n));
+    }
+
+    prevBtn.addEventListener("click", () => goTo(current - 1));
+    nextBtn.addEventListener("click", () => goTo(current + 1));
+    dots.forEach(d => d.addEventListener("click", () => goTo(Number(d.dataset.i))));
+
+    // Swipe en mobile
+    let startX = 0;
+    track.addEventListener("touchstart", e => { startX = e.touches[0].clientX; });
+    track.addEventListener("touchend", e => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0 && current < approved.length - 1) goTo(current + 1);
+        if (diff < 0 && current > 0) goTo(current - 1);
       }
     });
   }
